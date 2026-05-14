@@ -1,0 +1,48 @@
+<div class="schedule-container">
+  <h2>Mon Emploi du Temps</h2>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Jour</th>
+          <th>Département</th>
+          <th>Horaires</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let day of days">
+          <!-- COLONNE JOUR -->
+          <td class="day-column">{{ translateDay(day) }}</td>
+
+          <!-- LOGIQUE SI TRAVAIL -->
+          <ng-container *ngIf="getHoursByDay(day).length > 0; else repos">
+            <!-- COLONNE DÉPARTEMENT -->
+            <td>
+              <div class="shift-wrapper" *ngFor="let wh of getHoursByDay(day)">
+                <span class="dept-badge">
+                  <i class="icon">🏢</i> {{ wh.department?.name }}
+                </span>
+              </div>
+            </td>
+            <!-- COLONNE HORAIRES -->
+            <td>
+              <div class="shift-wrapper" *ngFor="let wh of getHoursByDay(day)">
+                <span class="time-badge">
+                  <i class="icon">⏰</i> {{ formatTime(wh.startTime) }} — {{ formatTime(wh.endTime) }}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- TEMPLATE REPOS (Lui doit garder un colspan pour occuper l'espace) -->
+          <ng-template #repos>
+            <td colspan="2" class="repos-cell">
+              <span class="repos-badge">❌ Repos</span>
+            </td>
+          </ng-template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

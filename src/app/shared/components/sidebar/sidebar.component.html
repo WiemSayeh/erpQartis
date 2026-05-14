@@ -1,0 +1,119 @@
+<aside class="sidebar">
+
+  <!-- LOGO -->
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">A</div>
+    <span class="sidebar-logo-text">AutoParts <span class="sidebar-logo-accent">ERP</span></span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="sidebar-nav">
+
+    <!-- ========== ADMIN MENU ========== -->
+    <ng-container *ngIf="isAdmin()">
+
+      <p class="sidebar-section-label">Menu Principal</p>
+
+      <a routerLink="/dashboard" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">📊</span> Dashboard
+      </a>
+
+      <div class="sidebar-menu-group">
+  <div class="sidebar-link sidebar-link--parent"
+       (click)="toggleMenu('employees')"
+       [class.sidebar-link--active]="isMenuOpen('employees')">
+    <span class="sidebar-icon">👥</span>
+    <span>Employés</span>
+    <span class="sidebar-arrow">{{ isMenuOpen('employees') ? '▾' : '▸' }}</span>
+  </div>
+
+  <div class="sidebar-submenu" *ngIf="isMenuOpen('employees')">
+    <a routerLink="/employees/add" routerLinkActive="sidebar-sublink--active" class="sidebar-sublink">
+      <span class="sidebar-icon">➕</span> Ajouter employé
+    </a>
+    <a routerLink="/employees" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="sidebar-sublink--active" class="sidebar-sublink">
+      <span class="sidebar-icon">📋</span> Liste employés
+    </a>
+    <a routerLink="/admin/schedule" routerLinkActive="sidebar-sublink--active" class="sidebar-sublink">
+    <span class="sidebar-icon">📅</span> Emploi du temps
+  </a>
+    <a routerLink="/admin-leaves" routerLinkActive="sidebar-sublink--active" class="sidebar-sublink">
+      <span class="sidebar-icon">🏖️</span> Demandes de congé
+    </a>
+    <a routerLink="/admin-advances" routerLinkActive="sidebar-sublink--active" class="sidebar-sublink">
+      <span class="sidebar-icon">💰</span> Demandes d'avance
+    </a>
+  </div>
+</div>
+      <a routerLink="/customers" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">👤</span> Clients
+      </a>
+
+      <a routerLink="/suppliers" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">🏢</span> Fournisseurs
+      </a>
+
+      <p class="sidebar-section-label sidebar-section-label--spaced">Gestion</p>
+
+      <a routerLink="/orders" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">📋</span> Commandes
+      </a>
+
+      <a routerLink="/products" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">🏷️</span> Produits
+      </a>
+
+      <a routerLink="/stocks" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">📦</span> Stock
+      </a>
+
+      <a routerLink="/maintenance-services" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">🛠️</span> Maintenance
+      </a>
+
+    </ng-container>
+
+    <!-- ========== EMPLOYEE MENU ========== -->
+    <ng-container *ngIf="isEmployee()">
+
+      <p class="sidebar-section-label">Mon Espace</p>
+
+      <a routerLink="/today-tasks" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">✅</span> Tâches du jour
+      </a>
+
+      <a routerLink="/schedule" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">📅</span> Emploi du temps
+      </a>
+
+      <p class="sidebar-section-label sidebar-section-label--spaced">Demandes</p>
+
+      <a routerLink="/leave-request" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">🏖️</span> Demande de congé
+      </a>
+
+      <a routerLink="/salary-advance" routerLinkActive="sidebar-link--active" class="sidebar-link">
+        <span class="sidebar-icon">💰</span> Avance sur salaire
+      </a>
+
+    </ng-container>
+
+  </nav>
+
+  <!-- FOOTER USER -->
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">{{ userInitials }}</div>
+      <div class="sidebar-user-info">
+        <p class="sidebar-user-name">{{ userName }}</p>
+        <p class="sidebar-user-role">{{ isAdmin() ? 'Administrateur' : 'Employé' }}</p>
+      </div>
+    </div>
+
+    <button (click)="onLogout()" class="sidebar-logout">
+      <span class="sidebar-logout-icon">🚪</span>
+      <span>Déconnexion</span>
+    </button>
+  </div>
+
+</aside>

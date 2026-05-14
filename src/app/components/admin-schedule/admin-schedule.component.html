@@ -1,0 +1,174 @@
+<div class="admin-schedule">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <i class="ti ti-calendar-stats"></i>
+        Planning des employés
+      </h1>
+      <p class="page-sub">Vue globale de tous les horaires de travail</p>
+    </div>
+    <div class="header-stats" *ngIf="!isLoading">
+      <div class="stat-chip">
+        <span class="stat-value">{{ employees.length }}</span>
+        <span class="stat-label">Employés</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-value">{{ allWorkingHours.length }}</span>
+        <span class="stat-label">Créneaux</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div class="loader-wrap" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <span>Chargement des horaires...</span>
+  </div>
+
+  <div class="layout" *ngIf="!isLoading">
+
+    <!-- Sidebar : liste des employés -->
+    <aside class="sidebar">
+      <div class="search-wrap">
+        <i class="ti ti-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Rechercher un employé..."
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+
+      <div class="emp-list">
+        <div
+          *ngFor="let emp of filteredEmployees"
+          class="emp-card"
+          [class.active]="selectedEmployeeId === emp.id"
+          (click)="selectEmployee(emp.id)"
+        >
+          <div class="emp-avatar">{{ getInitials(emp) }}</div>
+          <div class="emp-info">
+            <span class="emp-name">{{ emp.fullName }}</span>
+            <span class="emp-dept">{{ getDepartmentName(emp.id) }}</span>
+          </div>
+          <div class="emp-meta">
+            <span class="day-badge">{{ getWorkingDaysCount(emp.id) }}j</span>
+            <span class="hours-badge">{{ getTotalHours(emp.id).toFixed(0) }}h</span>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredEmployees.length === 0">
+          <i class="ti ti-users-off"></i>
+          <p>Aucun employé trouvé</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Panneau principal -->
+    <main class="main-panel">
+
+      <!-- Placeholder si aucun employé sélectionné -->
+      <div class="select-hint" *ngIf="!selectedEmployeeId">
+        <i class="ti ti-calendar-user"></i>
+        <h2>Sélectionnez un employé</h2>
+        <p>Cliquez sur un employé dans la liste pour voir son planning détaillé.</p>
+      </div>
+
+      <!-- Détail employé -->
+      <div *ngIf="selectedEmployeeId && selectedEmployee" class="detail-view">
+
+        <!-- Entête employé -->
+        <div class="detail-header">
+          <div class="detail-avatar">{{ getInitials(selectedEmployee) }}</div>
+          <div class="detail-info">
+            <h2>{{ selectedEmployee.fullName }}</h2>
+            <p class="detail-email">
+              <i class="ti ti-mail"></i>
+              {{ selectedEmployee.email }}
+            </p>
+            <p class="detail-dept">
+              <i class="ti ti-building"></i>
+              {{ getDepartmentName(selectedEmployee.id) }}
+            </p>
+          </div>
+          <div class="detail-kpis">
+            <div class="kpi">
+              <span class="kpi-val">{{ getWorkingDaysCount(selectedEmployee.id) }}</span>
+              <span class="kpi-lbl">jours / sem.</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-val">{{ getTotalHours(selectedEmployee.id).toFixed(1) }}</span>
+              <span class="kpi-lbl">heures / sem.</span>
+            </div>
+          </div>
+          <button class="btn-delete" (click)="deleteSchedule(selectedEmployee.id)" title="Supprimer les horaires">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+
+        <!-- Grille planning -->
+        <div class="schedule-grid">
+          <div
+            *ngFor="let day of days"
+            class="day-col"
+            [class.has-hours]="hasHoursForDay(selectedEmployee.id, day)"
+          >
+            <div class="day-label">{{ shortDay(day) }}</div>
+
+            <ng-container *ngIf="hasHoursForDay(selectedEmployee.id, day); else restDay">
+              <div
+                *ngFor="let wh of getHoursForDay(selectedEmployee.id, day)"
+                class="slot"
+              >
+                <span class="slot-dept">{{ wh.department?.name }}</span>
+                <span class="slot-time">{{ formatTime(wh.startTime) }}</span>
+                <span class="slot-sep">→</span>
+                <span class="slot-time">{{ formatTime(wh.endTime) }}</span>
+              </div>
+            </ng-container>
+
+            <ng-template #restDay>
+              <div class="rest-label">Repos</div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Vue tableau récapitulatif -->
+        <div class="table-wrap">
+          <h3 class="section-title">
+            <i class="ti ti-table"></i>
+            Récapitulatif détaillé
+          </h3>
+          <table class="recap-table">
+            <thead>
+              <tr>
+                <th>Jour</th>
+                <th>Département</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Durée</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let day of days">
+                <tr *ngFor="let wh of getHoursForDay(selectedEmployee.id, day)">
+                  <td><span class="td-day">{{ translateDay(day) }}</span></td>
+                  <td>{{ wh.department?.name }}</td>
+                  <td class="td-time">{{ formatTime(wh.startTime) }}</td>
+                  <td class="td-time">{{ formatTime(wh.endTime) }}</td>
+                  <td class="td-dur">{{ calcDuration(wh.startTime, wh.endTime) }}h</td>
+                </tr>
+              </ng-container>
+              <tr *ngIf="getHoursForEmployee(selectedEmployee.id).length === 0">
+                <td colspan="5" class="no-data">Aucun horaire défini</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>

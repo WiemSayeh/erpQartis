@@ -1,0 +1,51 @@
+<header class="erp-navbar">
+
+  <!-- LEFT : search (admin only) -->
+  <div class="erp-navbar__left">
+    <div *ngIf="isAdmin()" class="erp-search">
+      <span class="erp-search__icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
+      <input
+        type="text"
+        class="erp-search__input"
+        placeholder="Rechercher une pièce, un employé..."
+        [value]="searchQuery"
+        (input)="onSearch($event)">
+    </div>
+
+    <!-- Employee : titre de page simple -->
+    <div *ngIf="isEmployee()" class="erp-page-title">
+      Mon Espace
+    </div>
+  </div>
+
+  <!-- RIGHT : actions + user -->
+  <div class="erp-navbar__right">
+
+    <!-- Notification bell -->
+    <button class="erp-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="erp-icon-btn__badge"></span>
+    </button>
+
+    <div class="erp-divider"></div>
+
+    <!-- User info -->
+    <div class="erp-user">
+      <div class="erp-user__info">
+        <p class="erp-user__name">{{ userName || 'Utilisateur' }}</p>
+        <p class="erp-user__role">{{ userSubtitle }}</p>
+      </div>
+      <div class="erp-user__avatar">
+        {{ userInitials }}
+      </div>
+    </div>
+
+  </div>
+</header>

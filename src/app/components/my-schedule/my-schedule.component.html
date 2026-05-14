@@ -1,0 +1,41 @@
+<div class="employee-container">
+  <!-- Header -->
+  <header class="page-header">
+    <h2>Bonjour, {{ employeeName }} 👋</h2>
+    <p>Voici votre planning pour les jours à venir.</p>
+  </header>
+
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="loader-container">
+    <div class="spinner"></div>
+    <p>Récupération de vos horaires...</p>
+  </div>
+
+  <!-- Liste des horaires -->
+  <div class="shift-grid" *ngIf="!isLoading && myShifts.length > 0">
+    <div class="shift-card" *ngFor="let shift of myShifts">
+      <div class="card-date">
+        <span class="day-num">{{ shift.date | date:'dd' }}</span>
+        <span class="month">{{ shift.date | date:'MMM' }}</span>
+      </div>
+
+      <div class="card-content">
+        <div class="dept-name">
+          <span class="icon">🏢</span> {{ shift.department?.name }}
+        </div>
+        <div class="shift-time">
+          <span class="icon">⏰</span> {{ shift.startTime }} — {{ shift.endTime }}
+        </div>
+      </div>
+
+      <div class="badge-status">Confirmé</div>
+    </div>
+  </div>
+
+  <!-- État vide -->
+  <div class="empty-state" *ngIf="!isLoading && myShifts.length === 0">
+    <div class="empty-icon">📅</div>
+    <h3>Tout est calme ici</h3>
+    <p>Aucun service n'est planifié pour le moment.</p>
+  </div>
+</div>

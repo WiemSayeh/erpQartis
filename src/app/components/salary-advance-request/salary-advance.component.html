@@ -1,0 +1,120 @@
+<div class="page">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1>💰 Avance sur salaire</h1>
+      <p *ngIf="employeeInfo">
+        Bonjour, <strong>{{ employeeInfo.fullName }}</strong>
+      </p>
+    </div>
+
+    <!-- INFOS CARDS -->
+    <div class="info-cards" *ngIf="employeeInfo">
+
+      <div class="info-card">
+        <div class="info-icon">💵</div>
+        <div>
+          <div class="info-label">Salaire mensuel</div>
+          <div class="info-value">{{ employeeInfo.salary }} DT</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">📊</div>
+        <div>
+          <div class="info-label">Maximum autorisé (50%)</div>
+          <div class="info-value accent">{{ getMaxAdvance() }} DT</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">✅</div>
+        <div>
+          <div class="info-label">Déjà reçu ce mois</div>
+          <div class="info-value danger">{{ getTotalThisMonth() }} DT</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">🎯</div>
+        <div>
+          <div class="info-label">Reste disponible</div>
+          <div class="info-value success">{{ getRemainingAllowed() }} DT</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ALERTE PENDING -->
+    <div class="alert alert-pending" *ngIf="hasPendingRequest()">
+      ⏳ Vous avez une demande <strong>en attente de traitement</strong>.
+      Vous ne pouvez pas soumettre une nouvelle demande tant qu'elle n'est pas traitée.
+    </div>
+
+    <!-- ALERTE PLAFOND ATTEINT -->
+    <div class="alert alert-danger" *ngIf="!hasPendingRequest() && hasReachedMonthlyLimit()">
+      ❌ Vous avez atteint le plafond de 50% de votre salaire ce mois-ci.
+      Vous pourrez faire une nouvelle demande le mois prochain.
+    </div>
+
+    <!-- ALERTE INFO -->
+    <div class="alert alert-warning" *ngIf="!hasPendingRequest() && !hasReachedMonthlyLimit()">
+      ⚠️ Maximum autorisé ce mois-ci : <strong>{{ getRemainingAllowed() }} DT</strong>
+    </div>
+
+    <!-- FORMULAIRE — masqué si PENDING ou plafond atteint -->
+    <div class="card" *ngIf="!hasPendingRequest() && !hasReachedMonthlyLimit()">
+      <h2>Nouvelle demande</h2>
+
+      <div class="input-group">
+        <label>Montant (DT)</label>
+        <input
+          type="number"
+          [(ngModel)]="form.amount"
+          placeholder="Entrer le montant"
+          [max]="getRemainingAllowed()"
+          min="1">
+        <span class="input-hint">Maximum : {{ getRemainingAllowed() }} DT</span>
+      </div>
+
+      <div *ngIf="successMsg" class="success-msg">✅ {{ successMsg }}</div>
+      <div *ngIf="errorMsg" class="error-msg">❌ {{ errorMsg }}</div>
+
+      <button (click)="submitAdvance()" [disabled]="isLoading" class="btn">
+        <span *ngIf="!isLoading">Envoyer la demande</span>
+        <span *ngIf="isLoading">Envoi en cours...</span>
+      </button>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div class="card" *ngIf="advanceHistory.length > 0">
+      <h2>Historique des demandes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let adv of advanceHistory">
+            <td>{{ adv.date }}</td>
+            <td>{{ adv.amount }} DT</td>
+            <td>
+              <span [class]="'badge ' + getStatusClass(adv.status)">
+                {{ getStatusLabel(adv.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty" *ngIf="advanceHistory.length === 0">
+      Aucune demande d'avance pour le moment.
+    </div>
+
+  </div>
+</div>

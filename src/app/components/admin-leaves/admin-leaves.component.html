@@ -1,0 +1,71 @@
+<div class="container">
+
+  <h2 class="title">Gestion des congés</h2>
+
+  <div class="table-container">
+    <table>
+
+      <thead>
+        <tr>
+          <th>Employé</th>
+          <th>Début</th>
+          <th>Fin</th>
+          <th>Jours</th>
+          <th>Raison</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let leave of leaves">
+
+          <td class="employee">{{ leave.employeeName }}</td>
+
+          <td>{{ leave.startDate | date:'shortDate' }}</td>
+          <td>{{ leave.endDate | date:'shortDate' }}</td>
+
+          <td class="days">{{ leave.workingDays }} j</td>
+
+          <td class="reason">{{ leave.reason }}</td>
+
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'pending': leave.status === 'PENDING',
+                'approved': leave.status === 'APPROVED',
+                'rejected': leave.status === 'REJECTED'
+              }">
+              {{ leave.status }}
+            </span>
+          </td>
+
+          <td *ngIf="leave.status === 'PENDING'">
+
+            <button class="btn approve" (click)="approve(leave.id)">
+              ✔ Accepter
+            </button>
+
+            <button class="btn reject" (click)="reject(leave.id)">
+              ✖ Refuser
+            </button>
+
+          </td>
+
+        </tr>
+
+        <!-- Aucun congé -->
+        <tr *ngIf="leaves.length === 0">
+          <td colspan="7" class="empty">
+            Aucun congé trouvé
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+  </div>
+
+</div>

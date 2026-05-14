@@ -1,0 +1,80 @@
+<div class="container">
+
+  <h2 class="title">Gestion des avances de salaire</h2>
+
+  <div class="table-container">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Employé</th>
+          <th>Montant</th>
+          <th>Salaire</th>
+          <th>Reste</th>
+          <th>Date</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let adv of advances">
+
+          <td class="employee">{{ adv.employeeName }}</td>
+
+          <td class="amount">{{ adv.amount }} DT</td>
+
+          <td>{{ adv.salary }} DT</td>
+
+          <td class="remaining">
+            <span *ngIf="adv.status === 'APPROVED'">
+              {{ adv.remainingSalary }} DT
+            </span>
+            <span *ngIf="adv.status !== 'APPROVED'">
+              -
+            </span>
+          </td>
+
+          <td>{{ adv.date | date:'shortDate' }}</td>
+
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'pending': adv.status === 'PENDING',
+                'approved': adv.status === 'APPROVED',
+                'rejected': adv.status === 'REJECTED'
+              }">
+              {{ adv.status }}
+            </span>
+          </td>
+
+          <td *ngIf="adv.status === 'PENDING'">
+
+            <button class="btn approve" (click)="approve(adv.id)">
+              ✔
+            </button>
+
+            <button class="btn reject" (click)="reject(adv.id)">
+              ✖
+            </button>
+
+          </td>
+
+        </tr>
+
+        <tr *ngIf="advances.length === 0">
+          <td colspan="7" class="empty">
+            Aucune demande d'avance
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

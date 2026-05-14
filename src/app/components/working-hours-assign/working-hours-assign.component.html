@@ -1,0 +1,128 @@
+<div class="min-h-screen bg-zinc-950 p-6 text-zinc-100 font-sans">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-8 flex justify-between items-end">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-white">Emploi du Temps</h1>
+        <p class="text-zinc-400 mt-1">Ajoutez autant de créneaux que nécessaire par jour.</p>
+      </div>
+      <button (click)="addSlot()"
+        class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all">
+        + Ajouter un créneau
+      </button>
+    </header>
+
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
+
+      <!-- Aucun créneau -->
+      <div *ngIf="slots.length === 0"
+        class="text-center py-16 text-zinc-600">
+        <p class="text-lg">Aucun créneau ajouté.</p>
+        <p class="text-sm mt-1">Cliquez sur "Ajouter un créneau" pour commencer.</p>
+        <button (click)="addSlot()"
+          class="mt-4 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all">
+          + Ajouter un créneau
+        </button>
+      </div>
+
+      <!-- Liste des créneaux -->
+      <div *ngIf="slots.length > 0" class="space-y-3">
+
+        <!-- En-têtes -->
+        <div class="grid grid-cols-12 gap-3 text-zinc-500 text-[11px] uppercase tracking-widest font-bold px-2">
+          <div class="col-span-3">Jour</div>
+          <div class="col-span-3">Heure Début</div>
+          <div class="col-span-3">Heure Fin</div>
+          <div class="col-span-2">Département</div>
+          <div class="col-span-1"></div>
+        </div>
+
+        <!-- Lignes créneaux -->
+        <div *ngFor="let slot of slots; let i = index"
+          class="grid grid-cols-12 gap-3 items-center bg-zinc-800/40 border border-zinc-800 rounded-xl px-3 py-3">
+
+          <!-- Jour -->
+          <div class="col-span-3">
+            <select [(ngModel)]="slot.dayOfWeek" (ngModelChange)="onDayChange(slot)"
+              class="w-full bg-zinc-800 border border-zinc-700 rounded-lg text-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600">
+              <option *ngFor="let d of days" [value]="d.value">{{ d.label }}</option>
+            </select>
+          </div>
+
+          <!-- Heure début -->
+          <div class="col-span-3">
+            <input type="time" [(ngModel)]="slot.startTime"
+              class="w-full bg-zinc-800 border border-zinc-700 rounded-lg text-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600" />
+          </div>
+
+          <!-- Heure fin -->
+          <div class="col-span-3">
+            <input type="time" [(ngModel)]="slot.endTime"
+              class="w-full bg-zinc-800 border border-zinc-700 rounded-lg text-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600" />
+          </div>
+
+          <!-- Département -->
+          <div class="col-span-2">
+            <select [(ngModel)]="slot.departmentId"
+              class="w-full bg-zinc-800 border border-zinc-700 rounded-lg text-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600">
+              <option [ngValue]="null" disabled>Choisir...</option>
+              <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
+            </select>
+          </div>
+
+          <!-- Supprimer -->
+          <div class="col-span-1 flex justify-center">
+            <button (click)="removeSlot(i)"
+              class="w-8 h-8 flex items-center justify-center bg-red-900/40 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition-all text-lg font-bold">
+              ×
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Bouton ajout rapide en bas -->
+        <button (click)="addSlot()"
+          class="w-full py-2 border border-dashed border-zinc-700 hover:border-indigo-500 text-zinc-500 hover:text-indigo-400 rounded-xl text-sm transition-all">
+          + Ajouter un autre créneau
+        </button>
+      </div>
+
+      <!-- Récapitulatif par jour -->
+      <div *ngIf="slots.length > 0" class="mt-6 p-4 bg-zinc-800/50 rounded-xl">
+        <p class="text-xs text-zinc-400 uppercase font-semibold mb-3">Récapitulatif par jour</p>
+        <div class="space-y-2">
+          <div *ngFor="let day of days">
+            <ng-container *ngIf="slotsByDay.get(day.value) as daySlots">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-bold text-zinc-300 w-20">{{ day.label }}</span>
+                <span *ngFor="let s of daySlots"
+                  class="px-2 py-1 bg-indigo-600/20 text-indigo-300 border border-indigo-700 rounded-full text-xs">
+                  {{ s.startTime }} → {{ s.endTime }}
+                  <span *ngIf="s.departmentId" class="ml-1 opacity-70">
+                    ({{ departments | departmentName: s.departmentId }})
+                  </span>
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="mt-8 flex justify-between items-center">
+        <button (click)="skip()"
+          class="px-6 py-2 text-zinc-400 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-xl transition-all text-sm">
+          Passer pour l'instant
+        </button>
+
+        <button (click)="save()" [disabled]="!isValid() || isLoading"
+          class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/10">
+          <span *ngIf="!isLoading">Enregistrer l'emploi du temps</span>
+          <span *ngIf="isLoading">Enregistrement...</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

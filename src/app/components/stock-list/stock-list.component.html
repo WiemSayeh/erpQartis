@@ -1,0 +1,73 @@
+<div class="p-8 bg-slate-50 min-h-screen">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">📦 Gestion du Stock</h1>
+      <p class="text-slate-500">Localisation et suivi des pièces disponibles.</p>
+    </div>
+    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all">
+      + Ajouter au Stock
+    </button>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <table class="w-full text-left">
+      <thead class="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th class="px-6 py-4 text-sm font-semibold text-slate-600">Produit</th>
+          <th class="px-6 py-4 text-sm font-semibold text-slate-600">Emplacement</th>
+          <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-center">Quantité</th>
+          <th class="px-6 py-4 text-sm font-semibold text-slate-600">Seuil Alerte</th>
+          <th class="px-6 py-4 text-sm font-semibold text-slate-600">Statut</th>
+          <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr *ngFor="let item of stocks" class="hover:bg-slate-50/50 transition-colors">
+          <td class="px-6 py-4 font-medium text-slate-900">
+            {{ item.productName || 'Produit #' + item.productId }}
+          </td>
+          <td class="px-6 py-4 text-slate-600">
+            <span class="flex items-center">
+              <span class="mr-2">📍</span> {{ item.location }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <span class="font-bold text-lg" [class.text-red-600]="item.needsReorder">
+              {{ item.quantityAvailable }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-slate-500">{{ item.reorderThreshold }}</td>
+          <td class="px-6 py-4">
+            <span *ngIf="item.needsReorder" class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+              ⚠️ RÉAPPROVISIONNER
+            </span>
+            <span *ngIf="!item.needsReorder" class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+              ✅ EN STOCK
+            </span>
+          </td>
+          <td class="px-6 py-4 flex justify-end items-center space-x-2">
+            <!-- Input pour ajuster la quantité -->
+            <input type="number" [(ngModel)]="item.adjustAmount" placeholder="±Qté"
+                   class="w-16 border border-slate-300 rounded px-2 py-1 text-sm mr-2">
+
+            <!-- Bouton Ajuster -->
+            <button (click)="onAdjust(item.id, item.adjustAmount || 0)"
+                    class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+              Ajuster
+            </button>
+
+            <!-- Bouton Supprimer -->
+            <button (click)="onDelete(item.id)"
+                    class="text-red-600 hover:text-red-900 text-sm font-medium">
+              Supprimer
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="stocks.length === 0 && !loading" class="p-10 text-center text-slate-400 italic">
+      Aucun stock enregistré pour le moment.
+    </div>
+  </div>
+</div>

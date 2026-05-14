@@ -1,0 +1,52 @@
+<div class="p-8 bg-white rounded-[2rem] shadow-sm border border-slate-100 max-w-2xl mx-auto">
+  <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase mb-8">
+    {{ isEdit ? 'Modifier le Service' : 'Nouveau Service' }}
+  </h2>
+
+  <form (ngSubmit)="save()" class="space-y-5">
+
+    <div>
+      <label class="block text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Nom du service</label>
+      <input [(ngModel)]="service.name"
+             name="name"
+             required
+             placeholder="Ex: Vidange complète"
+             class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 text-slate-700 font-bold placeholder:text-slate-300 transition-all outline-none"/>
+    </div>
+
+    <div class="mt-2">
+      <label class="block text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Description détaillée</label>
+      <textarea [(ngModel)]="service.description"
+                name="description"
+                rows="3"
+                placeholder="Détaillez l'intervention..."
+                class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 text-slate-700 font-medium placeholder:text-slate-300 transition-all outline-none"></textarea>
+    </div>
+
+    <div class="mt-2 relative">
+      <label class="block text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Prix (DT)</label>
+      <input type="number"
+             [(ngModel)]="service.price"
+             name="price"
+             placeholder="0.00"
+             class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-black outline-none"/>
+      <span class="absolute right-5 top-[45px] text-slate-400 font-bold text-xs">TND</span>
+    </div>
+
+    <div class="mt-2 relative">
+      <label class="block text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Durée (minutes)</label>
+      <input type="number"
+             [(ngModel)]="service.estimatedDuration"
+             name="duration"
+             placeholder="60"
+             class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 text-slate-900 font-black outline-none"/>
+      <span class="absolute right-5 top-[45px] text-slate-400 font-bold text-xs uppercase">min</span>
+    </div>
+
+    <button type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 mt-6 rounded-2xl font-black text-sm shadow-lg shadow-indigo-100 transition-all uppercase tracking-widest">
+      {{ isEdit ? 'Mettre à jour' : 'Enregistrer le service' }}
+    </button>
+
+  </form>
+</div>

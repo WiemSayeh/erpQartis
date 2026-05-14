@@ -1,0 +1,160 @@
+/* Import d'une police moderne */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+.schedule-container {
+  padding: 40px 20px;
+  background-color: #f8fafc; /* Gris bleu très clair */
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+h2 {
+  text-align: center;
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  letter-spacing: -0.5px;
+}
+
+.table-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Ombre très douce */
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* HEADER */
+th {
+  background: #ffffff;
+  color: #64748b;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 20px;
+  text-align: left;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+/* CELLULES */
+td {
+  padding: 20px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* JOUR */
+.day-column {
+  font-weight: 600;
+  color: #1e293b;
+  width: 140px;
+  font-size: 15px;
+}
+
+/* CARTE DE SHIFT */
+.shift-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 8px;
+}
+
+.shift-card:last-child {
+  margin-bottom: 0;
+}
+
+.dept-badge {
+  background: #eff6ff; /* Bleu clair */
+  color: #2563eb;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.time-badge {
+  background: #f0fdf4; /* Vert clair */
+  color: #16a34a;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 6px;
+  font-style: normal;
+}
+
+/* REPOS */
+.repos-cell {
+  background-color: #fafafa;
+}
+
+.repos-badge {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* EFFET HOVER */
+tr:hover td {
+  background-color: #fcfdfe;
+  transition: background 0.2s ease;
+}
+/* ... garder la base précédente ... */
+
+/* Conteneur pour chaque ligne de shift dans une cellule */
+.shift-wrapper {
+  margin-bottom: 8px;
+  display: flex; /* Permet l'alignement vertical si le texte est long */
+  align-items: center;
+}
+
+.shift-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+/* On fixe une largeur min ou max si nécessaire pour l'uniformité */
+.dept-badge, .time-badge {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap; /* Évite que l'heure passe à la ligne */
+}
+
+.dept-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  min-width: 140px; /* Aligne le début des badges */
+}
+
+.time-badge {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Alignement spécifique pour les colonnes */
+td {
+  padding: 16px 20px;
+  vertical-align: top; /* Important si un jour a plusieurs shifts */
+}
+
+.day-column {
+  vertical-align: middle; /* Le jour reste centré même si 2 shifts à côté */
+}

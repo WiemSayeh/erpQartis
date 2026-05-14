@@ -1,0 +1,29 @@
+<div *ngIf="showPopup" class="fixed inset-0 bg-black/50 flex items-center justify-center">
+
+  <div class="bg-white p-6 rounded-xl w-[400px]">
+
+    <h2 class="text-lg font-bold mb-4">
+      Employé créé avec succès
+    </h2>
+
+    <p class="mb-4">
+      Voulez-vous maintenant :
+    </p>
+
+    <div class="flex justify-end gap-3">
+
+      <button (click)="skipSetup()"
+        class="px-4 py-2 bg-gray-300 rounded">
+        Non
+      </button>
+
+      <button (click)="createContractAndShift()"
+        class="px-4 py-2 bg-green-600 text-white rounded">
+        Oui
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,86 @@
+<div class="p-8 bg-white rounded-[2rem] shadow-sm border border-slate-100">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">Services de Maintenance</h2>
+      <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Gestion du catalogue technique</p>
+    </div>
+
+    <button (click)="create()"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-lg shadow-indigo-100 transition-all flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+      </svg>
+      AJOUTER UN SERVICE
+    </button>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-slate-50">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
+          <th class="px-6 py-4">Désignation du Service</th>
+          <th class="px-6 py-4">Tarif (DT)</th>
+          <th class="px-6 py-4">Durée Estimée</th>
+          <th class="px-6 py-4 text-right">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-slate-50">
+        <tr *ngFor="let s of services" class="hover:bg-slate-50/80 transition-colors group">
+          <td class="px-6 py-4 font-bold text-slate-700 text-sm">
+            {{ s.name }}
+          </td>
+
+          <td class="px-6 py-4">
+            <span class="font-black text-slate-900">{{ s.price | number:'1.2-2' }}</span>
+            <span class="text-[10px] ml-1 text-slate-400 font-bold">TND</span>
+          </td>
+
+          <td class="px-6 py-4">
+            <div class="flex items-center text-slate-500 text-sm font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ s.estimatedDuration }} min
+            </div>
+          </td>
+
+          <td class="px-6 py-4 text-right">
+            <div class="flex justify-end gap-2">
+              <button (click)="edit(s.id!)"
+                      class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors shadow-sm bg-white border border-slate-100"
+                      title="Modifier">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+
+              <button (click)="delete(s.id!)"
+                      class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shadow-sm bg-white border border-slate-100"
+                      title="Supprimer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="services?.length === 0" class="text-center py-20 bg-slate-50/50 rounded-b-2xl border-t border-slate-50">
+    <p class="text-slate-400 font-bold text-sm italic">Aucun service de maintenance enregistré pour le moment.</p>
+  </div>
+  <div class="mt-8 pt-6 border-t border-slate-100 flex justify-end">
+    <button routerLink="/maintenance-request"
+            class="group flex items-center gap-3 bg-slate-900 hover:bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-xs tracking-widest transition-all duration-300 shadow-xl shadow-slate-200">
+      VOIR LES DEMANDES D'INTERVENTION
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-4 w-4 transform group-hover:translate-x-1 transition-transform"
+           fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </button>
+  </div>
+</div>

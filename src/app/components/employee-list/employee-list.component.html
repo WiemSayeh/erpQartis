@@ -1,0 +1,307 @@
+<div class="p-8 space-y-6 animate-fade-in">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Employés</h1>
+      <p class="text-slate-500 mt-1 text-sm">Consultez et gérez les membres de votre équipe AutoParts.</p>
+    </div>
+    <button routerLink="/employees/add"
+      class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-indigo-200">
+      <span class="text-lg leading-none">+</span> Ajouter un employé
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-wrap gap-3 items-center">
+
+    <!-- Nom -->
+    <div class="relative flex-1 min-w-[200px]">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+      <input
+        [(ngModel)]="filterName"
+        (ngModelChange)="applyFilters()"
+        type="text"
+        placeholder="Rechercher par nom..."
+        class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none">
+    </div>
+
+    <!-- Département -->
+    <select
+      [(ngModel)]="filterDepartment"
+      (ngModelChange)="applyFilters()"
+      class="px-4 py-2 border border-slate-200 rounded-xl text-sm text-slate-600 focus:outline-none bg-white">
+      <option value="">🏢 Tous les départements</option>
+      <option *ngFor="let d of allDepartments" [value]="d">{{ d }}</option>
+    </select>
+
+    <!-- Statut -->
+    <select
+      [(ngModel)]="filterStatus"
+      (ngModelChange)="applyFilters()"
+      class="px-4 py-2 border border-slate-200 rounded-xl text-sm text-slate-600 focus:outline-none bg-white">
+      <option value="">📋 Tous les statuts</option>
+      <option value="ACTIVE">✅ Actif</option>
+      <option value="ON_LEAVE">🟡 En congé</option>
+      <option value="RESIGNED">🔴 Démissionnaire</option>
+      <option value="TERMINATED">⛔ Licencié</option>
+    </select>
+
+    <!-- Reset -->
+    <button (click)="resetFilters()"
+      class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 text-sm rounded-xl transition font-medium">
+      ✖ Réinitialiser
+    </button>
+
+  </div>
+
+  <!-- Spinner -->
+  <div *ngIf="loading" class="flex justify-center items-center py-24">
+    <div class="animate-spin rounded-full h-10 w-10 border-[3px] border-slate-200 border-t-indigo-600"></div>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200 text-slate-400 text-[11px] uppercase font-bold tracking-widest">
+            <th class="px-5 py-3.5">Nom Complet</th>
+            <th class="px-5 py-3.5">Contact</th>
+            <th class="px-5 py-3.5">Localisation</th>
+            <th class="px-5 py-3.5">Département</th>
+            <th class="px-5 py-3.5">Salaire</th>
+            <th class="px-5 py-3.5 text-center">Statut</th>
+            <th class="px-5 py-3.5 text-right">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let emp of filteredEmployees"
+            class="hover:bg-slate-50/70 transition-colors">
+
+            <!-- Nom -->
+            <td class="px-5 py-3.5" [title]="emp.fullName">
+              <div class="font-semibold text-slate-800 truncate">{{ emp.fullName }}</div>
+            </td>
+
+            <!-- Contact -->
+            <td class="px-5 py-3.5 text-sm">
+              <div class="text-slate-700 truncate" [title]="emp.email">📧 {{ emp.email }}</div>
+              <div class="text-slate-400 text-xs mt-0.5">📞 {{ emp.phone || 'N/A' }}</div>
+            </td>
+
+            <!-- Localisation -->
+            <td class="px-5 py-3.5 text-sm text-slate-500 truncate" [title]="emp.address || 'N/A'">
+              {{ emp.address || 'N/A' }}
+            </td>
+
+            <!-- Départements -->
+            <td class="px-5 py-3.5">
+              <div class="flex flex-wrap gap-1">
+                <ng-container *ngIf="emp.departments?.length; else noDept">
+                  <span *ngFor="let d of emp.departments"
+                    class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[11px] font-semibold rounded-md border border-indigo-100">
+                    {{ d.name }}
+                  </span>
+                </ng-container>
+                <ng-template #noDept>
+                  <span class="text-xs text-slate-300 italic">Non assigné</span>
+                </ng-template>
+              </div>
+            </td>
+
+            <!-- Salaire -->
+            <td class="px-5 py-3.5 text-sm font-semibold text-slate-700 truncate">
+              {{ emp.salary | number:'1.3-3' }}
+              <span class="text-xs text-slate-400 font-normal ml-0.5">TND</span>
+            </td>
+
+            <!-- Statut -->
+            <td class="px-5 py-3.5 text-center">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full border"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700 border-emerald-200': emp.employmentStatus === 'ACTIVE',
+                  'bg-amber-50 text-amber-700 border-amber-200':       emp.employmentStatus === 'ON_LEAVE',
+                  'bg-red-50 text-red-600 border-red-200':             emp.employmentStatus === 'RESIGNED',
+                  'bg-slate-100 text-slate-500 border-slate-200':      emp.employmentStatus === 'TERMINATED'
+                }">
+                <ng-container [ngSwitch]="emp.employmentStatus">
+                  <span *ngSwitchCase="'ACTIVE'">✅ Actif</span>
+                  <span *ngSwitchCase="'ON_LEAVE'">🟡 En congé</span>
+                  <span *ngSwitchCase="'RESIGNED'">🔴 Démissionnaire</span>
+                  <span *ngSwitchCase="'TERMINATED'">⛔ Licencié</span>
+                  <span *ngSwitchDefault>{{ emp.employmentStatus }}</span>
+                </ng-container>
+              </span>
+            </td>
+
+            <!-- Actions -->
+            <td class="px-5 py-3.5">
+              <div class="flex justify-end gap-1">
+                <button (click)="openEditModal(emp)" title="Modifier"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 transition">
+                  ✏️
+                </button>
+                <button (click)="emp.id && deleteEmployee(emp.id)" title="Désactiver"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition">
+                  🗑️
+                </button>
+              </div>
+            </td>
+
+          </tr>
+
+          <!-- Vide -->
+          <tr *ngIf="filteredEmployees.length === 0">
+            <td colspan="7" class="px-6 py-16 text-center">
+              <div class="text-3xl mb-2">🔍</div>
+              <div class="text-slate-400 text-sm font-medium">Aucun employé trouvé.</div>
+              <div class="text-slate-300 text-xs mt-1">Essayez de modifier vos filtres.</div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer table -->
+    <div class="px-5 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+      <p class="text-xs text-slate-400">
+        <span class="font-semibold text-slate-600">{{ filteredEmployees.length }}</span>
+        / {{ employees.length }} employé(s) affiché(s)
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ POPUP EDIT ══════════════════════════ -->
+<div *ngIf="showEditModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[2px]"
+  (click)="closeEditModal()">
+
+  <div class="popup-box bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">Modifier l'employé</h2>
+        <p class="text-xs text-indigo-500 font-medium mt-0.5">{{ selectedEmployee?.fullName }}</p>
+      </div>
+      <button (click)="closeEditModal()"
+        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition text-lg">
+        ✕
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="p-6 space-y-5">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Nom -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nom complet</label>
+          <input formControlName="fullName" type="text" placeholder="Ahmed Ben Ali"
+            class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none">
+          <span class="text-xs text-red-400"
+            *ngIf="editForm.get('fullName')?.touched && editForm.get('fullName')?.invalid">
+            Nom requis (min. 3 caractères).
+          </span>
+        </div>
+
+        <!-- Email -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Email</label>
+          <input formControlName="email" type="email" placeholder="nom@entreprise.tn"
+            class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none">
+          <span class="text-xs text-red-400"
+            *ngIf="editForm.get('email')?.touched && editForm.get('email')?.invalid">
+            Email invalide.
+          </span>
+        </div>
+
+        <!-- Téléphone -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Téléphone</label>
+          <input formControlName="phone" type="tel" placeholder="20 123 456"
+            class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none">
+          <span class="text-xs text-red-400"
+            *ngIf="editForm.get('phone')?.touched && editForm.get('phone')?.invalid">
+            Numéro invalide (8 à 12 chiffres).
+          </span>
+        </div>
+
+        <!-- Adresse -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Adresse</label>
+          <input formControlName="address" type="text" placeholder="Rue, Ville"
+            class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none">
+        </div>
+
+        <!-- Contrat -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Type de contrat</label>
+          <select formControlName="contractType"
+            class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none bg-white">
+            <option value="CDI">CDI — Indéterminé</option>
+            <option value="CDD">CDD — Déterminé</option>
+            <option value="SIVP">Stage</option>
+          </select>
+        </div>
+
+        <!-- Salaire -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Salaire de base</label>
+          <div class="relative">
+            <input formControlName="salary" type="number" placeholder="0.000"
+              class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none pr-14">
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">TND</span>
+          </div>
+          <span class="text-xs text-red-400"
+            *ngIf="editForm.get('salary')?.touched && editForm.get('salary')?.invalid">
+            Salaire invalide.
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Départements -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Départements</label>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+          <label *ngFor="let d of allDepartmentObjects"
+            class="flex items-center gap-2 cursor-pointer group">
+            <input
+              type="checkbox"
+              [id]="'edit-dept-' + d.id"
+              [checked]="editSelectedDeptIds.includes(d.id)"
+              (change)="onEditDepartmentChange($event, d.id)"
+              class="w-4 h-4 rounded accent-indigo-600">
+            <span class="text-sm text-slate-600 group-hover:text-indigo-600 transition">{{ d.name }}</span>
+          </label>
+        </div>
+        <span class="text-xs text-red-400"
+          *ngIf="editSelectedDeptIds.length === 0 && editFormTouched">
+          Veuillez sélectionner au moins un département.
+        </span>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+        <button type="button" (click)="closeEditModal()"
+          class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold rounded-xl transition">
+          Annuler
+        </button>
+        <button type="submit"
+          class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition shadow-sm shadow-indigo-200">
+          💾 Enregistrer
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

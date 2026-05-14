@@ -1,0 +1,114 @@
+<div class="page">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1>🏖️ Demande de Congé</h1>
+      <p *ngIf="employeeInfo">Bonjour, <strong>{{ employeeInfo.fullName }}</strong></p>
+    </div>
+
+    <!-- INFOS CONTRAT -->
+    <div class="info-cards" *ngIf="employeeInfo">
+      <div class="info-card">
+        <div class="info-icon">📋</div>
+        <div>
+          <div class="info-label">Type de contrat</div>
+          <div class="info-value">{{ getContractLabel() }}</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📅</div>
+        <div>
+          <div class="info-label">Jours restants</div>
+          <div class="info-value accent">{{ employeeInfo.remainingDays }} jours</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🎯</div>
+        <div>
+          <div class="info-label">Maximum autorisé</div>
+          <div class="info-value">{{ getMaxDays() }} jours</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTE STAGE -->
+    <div class="alert alert-warning" *ngIf="employeeInfo?.contractType === 'STAGE'">
+      ⚠️ En tant que stagiaire, vous pouvez demander un maximum de <strong>5 jours consécutifs</strong>.
+    </div>
+
+    <!-- ALERTE SOLDE FAIBLE -->
+    <div class="alert alert-danger" *ngIf="employeeInfo?.remainingDays === 0">
+      ❌ Vous n'avez plus de jours de congé disponibles.
+    </div>
+
+    <!-- ALERTE DEMANDE EN COURS -->
+    <div class="alert alert-pending" *ngIf="hasPendingRequest()">
+      ⏳ Vous avez une demande de congé <strong>en attente de traitement</strong>.
+      Vous ne pouvez pas soumettre une nouvelle demande tant qu'elle n'est pas traitée.
+    </div>
+
+    <!-- FORMULAIRE — visible uniquement si pas de PENDING -->
+    <div class="card" *ngIf="!hasPendingRequest()">
+      <h2>Nouvelle demande</h2>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>Date de début</label>
+          <input type="date" [(ngModel)]="form.startDate" [min]="today">
+        </div>
+        <div class="input-group">
+          <label>Date de fin</label>
+          <input type="date" [(ngModel)]="form.endDate" [min]="form.startDate || today">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Motif</label>
+        <textarea [(ngModel)]="form.reason" rows="3" placeholder="Expliquez la raison de votre congé..."></textarea>
+      </div>
+
+      <div *ngIf="successMsg" class="success-msg">✅ {{ successMsg }}</div>
+      <div *ngIf="errorMsg" class="error-msg">❌ {{ errorMsg }}</div>
+
+      <button (click)="submitLeave()"
+              [disabled]="isLoading || employeeInfo?.remainingDays === 0"
+              class="btn">
+        <span *ngIf="!isLoading">Envoyer la demande</span>
+        <span *ngIf="isLoading">Envoi en cours...</span>
+      </button>
+    </div>
+
+    <!-- HISTORIQUE — toujours visible -->
+    <div class="card" *ngIf="leaveHistory.length > 0">
+      <h2>Historique des demandes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Jours</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let leave of leaveHistory">
+            <td>{{ leave.startDate }}</td>
+            <td>{{ leave.endDate }}</td>
+            <td>{{ leave.workingDays }} jours</td>
+            <td>
+              <span [class]="'badge ' + getStatusClass(leave.status)">
+                {{ getStatusLabel(leave.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty" *ngIf="leaveHistory.length === 0 && !hasPendingRequest()">
+      Aucune demande de congé pour le moment.
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,99 @@
+<div class="dashboard-wrapper">
+
+  <main class="main-content">
+    <div class="content-container">
+      <!-- DASHBOARD VIEW -->
+      <div *ngIf="activeTab === 'dashboard'" class="fade-in">
+       <header class="welcome-banner fade-in">
+  <div class="welcome-content">
+    <div class="welcome-text">
+      <h1>Bonjour, <span class="highlight">{{ fullName }}</span> 👋</h1>
+      <p>Ravi de vous revoir ! Voici un aperçu de votre activité hebdomadaire.</p>
+    </div>
+    <div class="welcome-date">
+      <span class="today-icon">📅</span>
+      <div>
+        <span class="day-label">{{ today | date:'EEEE' }}</span>
+        <span class="full-date">{{ today | date:'dd MMMM yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">📅</div>
+            <div class="stat-details">
+              <span class="label">Shifts prévus</span>
+              <span class="value">{{ myShifts.length }}</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">⏱️</div>
+            <div class="stat-details">
+              <span class="label">Heures travaillées</span>
+              <span class="value">{{ totalHours }}h</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red">🏖️</div>
+            <div class="stat-details">
+              <span class="label">Solde Congés</span>
+              <span class="value">{{ remainingDays }} j</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-layout">
+          <section class="recent-section">
+            <div class="section-header">
+              <h3>Demandes récentes</h3>
+              <button class="btn-link" (click)="activeTab = 'leave'">Voir tout</button>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item" *ngFor="let leave of leaveHistory.slice(0,3)">
+                <div class="item-icon">🏖️</div>
+                <div class="item-info">
+                  <p class="title">Demande de congé</p>
+                  <p class="subtitle">{{ leave.startDate | date:'dd MMM' }}</p>
+                </div>
+                <div class="status" [ngClass]="getStatusClass(leave.status)">
+                  {{ getStatusLabel(leave.status) }}
+                </div>
+              </div>
+            </div>
+          </section>
+
+      <section class="next-shift-section">
+  <h3>Prochain service</h3>
+
+  <!-- ✅ Si un shift existe -->
+  <div class="next-shift-card" *ngIf="nextShift; else noShift">
+    <div class="date-badge">
+     <span class="day">{{ nextShift.date + 'T00:00:00' | date:'dd' }}</span>
+<span class="month">{{ nextShift.date + 'T00:00:00' | date:'MMM' }}</span>
+    </div>
+    <div class="shift-info">
+      <p class="dept">🏢 {{ nextShift.department?.name }}</p>
+      <p class="time">⏰ {{ nextShift.startTime }} - {{ nextShift.endTime }}</p>
+    </div>
+  </div>
+
+  <!-- ✅ Si aucun shift -->
+  <ng-template #noShift>
+    <div class="no-shift-card">
+      <span>😴 Aucun service prévu</span>
+    </div>
+  </ng-template>
+</section>
+        </div>
+      </div>
+
+      <!-- Autres composants -->
+      <app-my-schedule *ngIf="activeTab === 'schedule'"></app-my-schedule>
+      <app-leave-request *ngIf="activeTab === 'leave'"></app-leave-request>
+      <app-salary-advance *ngIf="activeTab === 'advance'"></app-salary-advance>
+    </div>
+  </main>
+</div>

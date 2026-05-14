@@ -1,0 +1,109 @@
+<!-- APRÈS ✅ — structure correcte -->
+<div class="page-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>Création Employé RH</h2>
+      <p>Configurez le profil, le salaire et les accès départementaux.</p>
+    </div>
+
+    <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
+      <div class="form-grid">
+
+        <!-- Nom Complet -->
+        <div class="form-group">
+          <label>Nom complet</label>
+          <input formControlName="fullName" type="text" placeholder="Ahmed Ben Ali">
+          <span class="error-msg" *ngIf="employeeForm.get('fullName')?.touched && employeeForm.get('fullName')?.invalid">
+            Nom requis (min. 3 caractères).
+          </span>
+        </div>
+
+        <!-- CIN -->
+        <div class="form-group">
+          <label>CIN</label>
+          <input formControlName="cin" type="text" placeholder="8 chiffres">
+          <span class="error-msg" *ngIf="employeeForm.get('cin')?.touched && employeeForm.get('cin')?.invalid">
+            Le CIN doit contenir exactement 8 chiffres.
+          </span>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label>Email</label>
+          <input formControlName="email" type="email" placeholder="nom@entreprise.tn">
+          <span class="error-msg" *ngIf="employeeForm.get('email')?.touched && employeeForm.get('email')?.invalid">
+            Email professionnel invalide.
+          </span>
+        </div>
+
+        <!-- Téléphone -->
+        <div class="form-group">
+          <label>Téléphone</label>
+          <input formControlName="phone" type="tel" placeholder="20 123 456">
+          <span class="error-msg" *ngIf="employeeForm.get('phone')?.touched && employeeForm.get('phone')?.invalid">
+            Numéro requis (8 à 12 chiffres).
+          </span>
+        </div>
+
+        <!-- Salaire -->
+        <div class="form-group">
+          <label>Salaire de base</label>
+          <div class="input-with-icon">
+            <input formControlName="salary" type="number" class="no-spin" placeholder="0.000">
+            <span class="currency-label">TND</span>
+          </div>
+          <span class="error-msg" *ngIf="employeeForm.get('salary')?.touched && employeeForm.get('salary')?.invalid">
+            Salaire valide requis.
+          </span>
+        </div>
+
+        <!-- Type de contrat -->
+        <div class="form-group">
+          <label>Type de contrat</label>
+          <select formControlName="contractType">
+            <option value="CDI">CDI (Indéterminé)</option>
+            <option value="CDD">CDD (Déterminé)</option>
+            <option value="SIVP">STAGE</option>
+          </select>
+        </div>
+
+        <!-- Adresse -->
+        <div class="form-group full-width">
+          <label>Adresse de résidence</label>
+          <input formControlName="address" type="text" placeholder="Rue, Ville, Code Postal">
+        </div>
+
+        <!-- Départements -->
+        <div class="form-group full-width">
+          <label class="label-highlight">Affectation aux Départements</label>
+          <div class="checkbox-grid">
+            <div *ngFor="let d of departments" class="checkbox-item">
+              <input
+                type="checkbox"
+                [id]="'dept-' + d.id"
+                [checked]="employeeForm.get('departmentIds')?.value?.includes(d.id)"
+                (change)="onDepartmentChange($event, d.id)"
+              >
+              <label [for]="'dept-' + d.id">
+                <span class="custom-box"></span>
+                {{ d.name }}
+              </label>
+            </div>
+          </div>
+          <small class="error-msg" *ngIf="employeeForm.get('departmentIds')?.touched && employeeForm.get('departmentIds')?.errors?.['noDepartment']">
+            Veuillez sélectionner au moins un département.
+          </small>
+        </div>
+
+      </div>  
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="employeeForm.reset()">Annuler</button>
+        <button type="submit" class="btn-primary" [disabled]="employeeForm.invalid">
+          Enregistrer l'employé
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

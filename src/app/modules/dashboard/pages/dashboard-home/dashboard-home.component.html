@@ -1,0 +1,121 @@
+<div
+  *ngIf="showNotification"
+  class="fixed top-6 right-6 z-50 bg-emerald-500 text-white px-6 py-4 rounded-2xl shadow-2xl animate-bounce"
+>
+
+  <div class="flex justify-between items-start gap-4">
+
+    <div>
+      <div class="font-black text-sm mb-1">
+        🔔 Nouvelle Vérification
+      </div>
+
+      <div class="text-xs">
+        {{ latestNotification?.employeeName }}
+        a été vérifié avec succès
+      </div>
+
+      <div class="text-[10px] mt-1 opacity-80">
+        CIN : {{ latestNotification?.cin }}
+      </div>
+    </div>
+
+    <!-- ❌ CLOSE BUTTON -->
+    <button
+      (click)="closeNotification()"
+      class="text-white font-black text-lg leading-none"
+    >
+      ✕
+    </button>
+
+  </div>
+</div>
+<div class="p-8 bg-slate-50 min-h-screen text-slate-900 font-sans">
+
+  <div class="flex justify-between items-center mb-10">
+    <div>
+      <h1 class="text-3xl font-black text-indigo-950 uppercase tracking-tighter">Système AutoParts • BI</h1>
+      <p class="text-slate-400 font-bold text-[10px] tracking-widest mt-1">ANALYSE DÉCISIONNELLE EN TEMPS RÉEL</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-b-4 border-b-indigo-600">
+      <p class="text-slate-400 text-[10px] font-black uppercase mb-1">Chiffre d'Affaires</p>
+      <h2 class="text-2xl font-black">{{ stats?.totalRevenue | number:'1.0-0' }} DT</h2>
+      <span class="text-rose-500 text-[10px] font-bold" *ngIf="stats">📉 {{ stats.revenueGrowthPercentage | number:'1.1-1' }}%</span>
+    </div>
+
+    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-b-4 border-b-emerald-500">
+      <p class="text-slate-400 text-[10px] font-black uppercase mb-1">Commandes</p>
+      <h2 class="text-2xl font-black text-emerald-600">{{ stats?.ordersCount }}</h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-b-4 border-b-rose-500">
+      <p class="text-slate-400 text-[10px] font-black uppercase mb-1">Stock Critique</p>
+      <h2 class="text-2xl font-black text-rose-600">{{ stats?.lowStockAlerts }}</h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-b-4 border-b-slate-800">
+      <p class="text-slate-400 text-[10px] font-black uppercase mb-1">Clients Actifs</p>
+      <h2 class="text-2xl font-black text-slate-800">{{ stats?.activeCustomersCount }}</h2>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10" *ngIf="isLoaded; else loader">
+
+    <div class="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <h3 class="font-black text-slate-800 text-xs uppercase mb-8 tracking-widest">Évolution Mensuelle des Revenus</h3>
+      <div style="height: 350px; position: relative;">
+        <canvas baseChart
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <h3 class="font-black text-slate-800 text-xs uppercase mb-8 tracking-widest text-center">Parts de Marché / Marque</h3>
+      <div style="height: 300px; position: relative;">
+        <canvas baseChart
+                [data]="doughnutChartData"
+                [options]="doughnutChartOptions"
+                [type]="'doughnut'">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden" *ngIf="isLoaded">
+    <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+      <h3 class="font-black text-slate-800 uppercase text-xs">Dernières Activités</h3>
+    </div>
+    <table class="w-full text-left">
+      <thead class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+        <tr>
+          <th class="px-8 py-4">Client</th>
+          <th class="px-8 py-4">Montant Net</th>
+          <th class="px-8 py-4">Statut</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        <tr *ngFor="let order of stats?.latestOrders" class="hover:bg-indigo-50/50 transition-colors">
+          <td class="px-8 py-5 text-slate-700 font-bold text-xs uppercase tracking-tighter">{{ order.customerName }}</td>
+          <td class="px-8 py-5 font-black text-slate-900">{{ order.totalAmount | number:'1.2-2' }} DT</td>
+          <td class="px-8 py-5">
+            <span class="bg-amber-100 text-amber-700 px-4 py-1 rounded-full text-[9px] font-black uppercase">
+              {{ order.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loader>
+    <div class="p-20 text-center font-black text-slate-300 animate-pulse tracking-widest uppercase">
+      Synchronisation avec le Backend AutoParts...
+    </div>
+  </ng-template>
+</div>
